@@ -10,12 +10,15 @@ import {
 } from '@/components/ui/navigation-menu'
 import { ModeToggle } from '../components/ui/mode-toggle'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 const Navbar = () => {
+	const { userInfo } = useSelector(state => {})
 	return (
 		<>
 			<NavigationMenu>
 				<NavigationMenuList>
+					{}
 					<div className='mr-5'>
 						<NavigationMenuItem className='flex gap-x-4'>
 							<NavigationMenuLink>

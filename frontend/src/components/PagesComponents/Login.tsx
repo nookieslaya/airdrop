@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { LoginSchema } from '@/schema'
 import { Card } from '@/components/ui/card'
 import { z } from 'zod'
@@ -12,6 +12,8 @@ import { Input } from '@/components/ui/input'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLoginMutation } from '../../slices/usersApiSlice'
 import { setCredentials } from '../../slices/authSlice'
+
+import { toast } from 'react-toastify'
 
 const Login = () => {
 	const navigate = useNavigate()
@@ -26,14 +28,6 @@ const Login = () => {
 		}
 	}, [navigate, userInfo])
 
-	// const [email, setEmail] = useState('')
-	// const [password, setPassword] = useState('')
-
-	// const submitHandler = async e => {
-	// 	e.preventDefault()
-	// 	console.log('submit')
-	// }
-
 	const form = useForm<z.infer<typeof LoginSchema>>({
 		resolver: zodResolver(LoginSchema),
 		defaultValues: {
@@ -45,14 +39,13 @@ const Login = () => {
 	// 2. Define a submit handler.
 	async function onSubmit(values: z.infer<typeof LoginSchema>) {
 		try {
+			const { email, password } = values
 			const res = await login({ email, password }).unwrap()
 			dispatch(setCredentials({ ...res }))
 			navigate('/')
 		} catch (err) {
-			console.log(err?.data?.message || err.error)
+			toast.error(err.data.message || err.error)
 		}
-
-		console.log(values)
 	}
 	return (
 		<div className='flex justify-center items-center'>
