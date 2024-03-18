@@ -10,8 +10,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { useLoginMutation } from '../../slices/usersApiSlice'
-import { setCredentials } from '../../slices/authSlice'
+import { useLoginMutation } from '../../slices/usersApiSlice.js'
+import { setCredentials } from '../../slices/authSlice.js'
 
 import { toast } from 'react-toastify'
 
@@ -20,7 +20,10 @@ const Login = () => {
 	const dispatch = useDispatch()
 
 	const [login, { isLoading }] = useLoginMutation()
+
 	const { userInfo } = useSelector(state => state.auth)
+
+	console.log(userInfo)
 
 	useEffect(() => {
 		if (userInfo) {
@@ -44,7 +47,7 @@ const Login = () => {
 			dispatch(setCredentials({ ...res }))
 			navigate('/')
 		} catch (err) {
-			toast.error(err.data.message || err.error)
+			toast.error(err?.data?.message || err.error)
 		}
 	}
 	return (
