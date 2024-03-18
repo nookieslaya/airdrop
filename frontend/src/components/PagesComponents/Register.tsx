@@ -1,4 +1,5 @@
 // import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { RegisterSchema } from '@/schema'
 import { Card } from '@/components/ui/card'
 import { z } from 'zod'
@@ -7,7 +8,11 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
+import { useRegisterMutation } from '../../slices/usersApiSlice'
+import { setCredentials } from '../../slices/authSlice.js'
 
 const Register = () => {
 	const form = useForm({
@@ -19,11 +24,33 @@ const Register = () => {
 			confirmPassword: '',
 		},
 	})
+	const navigate = useNavigate()
+	const dispatch = useDispatch()
 
-	const onSubmit = (data: z.infer<typeof RegisterSchema>) => {
-		console.log(data)
+	const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
+		const { email, password, name, confirmPassword } = values
+		if (password !== confirmPassword) {
+			toast.error('Password do not match')
+		} else {
+			try {
+				const res = await register({ name, email, password, confirmPassword }).unwrap()
+				dispatch(setCredentials({ ...res }))
+				navigate('/')
+			} catch (err) {
+				toast.error(err?.data?.message || err.error)
+			}
+		}
 	}
 
+	const { userInfo } = useSelector(state => state.auth)
+	console.log(userInfo)
+	const [register, { isLoading }] = useRegisterMutation()
+
+	useEffect(() => {
+		if (userInfo) {
+			navigate('/')
+		}
+	}, [navigate, userInfo])
 	return (
 		<div className='flex justify-center items-center'>
 			<Card className='max-w-[600px] p-5'>
@@ -83,6 +110,8 @@ const Register = () => {
 								)}
 							/>
 						</div>
+
+						{isLoading && <h2>Register</h2>}
 						<Button type='submit' className='w-full'>
 							Register
 						</Button>

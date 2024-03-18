@@ -7,25 +7,36 @@ import {
 	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
-	DropdownMenuPortal,
 	DropdownMenuSeparator,
 	DropdownMenuShortcut,
-	DropdownMenuSub,
-	DropdownMenuSubContent,
-	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-
+import { NavigationMenuItem, NavigationMenuLink } from './ui/navigation-menu'
 import { ModeToggle } from '../components/ui/mode-toggle'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { useState } from 'react'
+import { useLogoutMutation } from '../slices/usersApiSlice'
+import { logout } from '../slices/authSlice'
 
 const Navbar = () => {
 	const [position, setPosition] = useState('bottom')
 
 	const { userInfo } = useSelector(state => state.auth)
 	console.log(userInfo)
+
+	const [logoutApiCall] = useLogoutMutation()
+	const dispatch = useDispatch()
+	const navigate = useNavigate()
+	const logoutHandler = async () => {
+		try {
+			await logoutApiCall().unwrap()
+			dispatch(logout())
+			navigate('/')
+		} catch (err) {
+			console.log(err)
+		}
+	}
 
 	return (
 		<>
@@ -46,7 +57,7 @@ const Navbar = () => {
 								</DropdownMenuItem>
 							</DropdownMenuGroup>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem>
+							<DropdownMenuItem onClick={logoutHandler}>
 								<LogOut className='mr-2 h-4 w-4' />
 								<span>Log out</span>
 								<DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
@@ -56,12 +67,13 @@ const Navbar = () => {
 				) : (
 					<div className='mr-5'>
 						<NavigationMenuItem className='flex gap-x-4'>
-							<NavigationMenuLink>
-								<Link to='/login'>Log inn</Link>
-							</NavigationMenuLink>
-							<NavigationMenuLink>
-								<Link to='/register'>Sign Up</Link>
-							</NavigationMenuLink>
+							<Link to='/login'>
+								<Button variant='outline'>Log in </Button>
+							</Link>
+
+							<Link to='/register'>
+								<Button variant='outline'>Sign Up</Button>
+							</Link>
 						</NavigationMenuItem>
 					</div>
 				)}

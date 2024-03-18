@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLoginMutation } from '../../slices/usersApiSlice.js'
 import { setCredentials } from '../../slices/authSlice.js'
-
 import { toast } from 'react-toastify'
 
 const Login = () => {
@@ -83,6 +82,7 @@ const Login = () => {
 								</FormItem>
 							)}
 						/>
+						{isLoading && <h2>login</h2>}
 						<Button type='submit'>Log in</Button>
 					</form>
 				</Form>
