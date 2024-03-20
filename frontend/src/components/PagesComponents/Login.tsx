@@ -26,7 +26,7 @@ const Login = () => {
 
 	useEffect(() => {
 		if (userInfo) {
-			navigate('/')
+			navigate('/dashboard')
 		}
 	}, [navigate, userInfo])
 
@@ -44,7 +44,7 @@ const Login = () => {
 			const { email, password } = values
 			const res = await login({ email, password }).unwrap()
 			dispatch(setCredentials({ ...res }))
-			navigate('/')
+			navigate('/dashboard')
 		} catch (err) {
 			toast.error(err?.data?.message || err.error)
 		}
