@@ -1,64 +1,48 @@
 import Faucet from '../models/faucetsModel.js'
 import asyncHandler from 'express-async-handler'
+import User from '../models/userModel.js'
 
-// Dodawanie nowego faucet
-const CreateFaucet = asyncHandler(async (req, res) => {
-	const { name, url } = req.body
 
-	const userId = req.user._id
-	console.log(req.user._id)
-	const faucet = new Faucet({ name, url, userId })
-	const savedFaucet = await faucet.save()
+const CreateFaucet = async (req, res) => {
+	try {
+		const { faucetName, url } = req.body
 
-	res.status(201).json(savedFaucet)
-})
+		const userId = req.user._id
 
-// Edytowanie faucet
-const UpdateFaucet = asyncHandler(async (req, res) => {
-	const faucetId = req.params.id
-	const userId = req.user._id
-	const { name, url } = req.body
+		const newFaucet = new Faucet({ userOwner: userId, faucetName, url })
+		const response = await newFaucet.save()
 
-	const faucetToUpdate = await Faucet.findOne({ _id: faucetId, userId })
-	if (!faucetToUpdate) {
-		res.status(404)
-		throw new Error('Faucet not found or unauthorized to edit')
+		const user = await User.findById(userId)
+		user.faucet.push(newFaucet._id)
+		await user.save()
+
+		res.status(201).json(response)
+	} catch (error) {
+		console.error('Błąd podczas dodawania kranu:', error.message)
+		res.status(500).json({ message: 'Wystąpił błąd serwera podczas dodawania kranu.' })
 	}
-
-	faucetToUpdate.name = name || faucetToUpdate.name
-	faucetToUpdate.url = url || faucetToUpdate.url
-
-	const updatedFaucet = await faucetToUpdate.save()
-	res.status(200).json(updatedFaucet)
-})
+}
 
 // Pobieranie faucet
-const GetFaucet = asyncHandler(async (req, res) => {
-	const faucetId = req.params.id
-	const userId = req.user._id
+const GetFaucet =  async (req, res) => {
+	try {
+		const user = await User.findById(req.params.userID).populate('faucet');
+		if (!user) {
+		  return res.status(404).json({ message: 'User not found' });
+		}
+	
+		console.log(user.faucet);
+		res.status(200).json({ faucet: user.faucet });
+	  } catch (err) {
+		console.error(err.message);
+		res.status(500).json({ message: 'Server Error' });
+	  }
+}
 
-	const faucet = await Faucet.findOne({ _id: faucetId, userId })
-	if (!faucet) {
-		res.status(404)
-		throw new Error('Faucet not found or unauthorized to access')
-	}
-
-	res.status(200).json(faucet)
-})
+// Edytowanie faucet
+const UpdateFaucet = asyncHandler(async (req, res) => {})
 
 // Usuwanie faucet
-const DeleteFaucet = asyncHandler(async (req, res) => {
-	const faucetId = req.params.id
-	const userId = req.user._id
-
-	const faucetToDelete = await Faucet.findOne({ _id: faucetId, userId })
-	if (!faucetToDelete) {
-		res.status(404)
-		throw new Error('Faucet not found or unauthorized to delete')
-	}
-
-	await faucetToDelete.remove()
-	res.status(200).json({ message: 'Faucet deleted successfully' })
-})
+const DeleteFaucet = asyncHandler(async (req, res) => {})
 
 export { CreateFaucet, DeleteFaucet, UpdateFaucet, GetFaucet }

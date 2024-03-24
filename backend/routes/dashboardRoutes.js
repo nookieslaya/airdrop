@@ -5,7 +5,7 @@ const router = express.Router()
 
 router.post('/faucet', CreateFaucet)
 router.put('/faucet/:id', UpdateFaucet)
-router.get('/faucet/:id', GetFaucet)
+router.get('/faucet/:userID', protect, GetFaucet)
 router.delete('/faucet/:id', DeleteFaucet)
 
 export default router

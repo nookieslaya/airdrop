@@ -25,12 +25,15 @@ export default function Hero() {
 							</div>
 							{/* Buttons */}
 							<div className='mt-8 gap-3 flex justify-center'>
-								<Button size={'lg'}>
-									<Link to='/login'>Log in</Link>
-								</Button>
-								<Button size={'lg'} variant={'outline'}>
-									<Link to='/register'>Sign Up</Link>
-								</Button>
+								<Link to='/login'>
+									<Button size={'lg'}>Log in</Button>
+								</Link>
+
+								<Link to='/register'>
+									<Button size={'lg'} variant={'outline'}>
+										Sign Up
+									</Button>
+								</Link>
 							</div>
 							{/* End Buttons */}
 						</div>

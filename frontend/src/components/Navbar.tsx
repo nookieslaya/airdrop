@@ -69,7 +69,7 @@ const Navbar = () => {
 					<div className='mr-5'>
 						<NavigationMenuItem className='flex gap-x-4'>
 							<Link to='/login'>
-								<Button variant='outline'>Log in </Button>
+								<Button variant='outline'>Log in</Button>
 							</Link>
 
 							<Link to='/register'>

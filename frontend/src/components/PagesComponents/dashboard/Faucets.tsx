@@ -3,13 +3,37 @@ import { Label } from '@radix-ui/react-label'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 const Faucets = () => {
-	const [faucets, setFaucets] = useState([{ name: 'Berachain', url: 'https://google.com' }])
+	const [faucets, setFaucets] = useState([])
 
 	const [faucetName, setFaucetName] = useState('')
 	const [faucetUrl, setFaucetUrl] = useState('')
+	const [savedFaucets, setSavedFaucets] = useState([])
+
+	const useGetUserID = () => {
+		return window.localStorage.getItem('userID')
+	}
+
+	const userID = useGetUserID()
+
+	console.log(userID)
+
+	useEffect(() => {
+		const fetchSavedFaucets = async () => {
+			try {
+				const response = await axios.get(`http://localhost:5000/api/dashboard/faucet/${userID}`)
+				console.log(response)
+				setSavedFaucets(response.data.faucet)
+			} catch (err) {
+				console.log(err)
+			}
+		}
+
+		fetchSavedFaucets()
+	}, [])
 
 	const addFaucet = e => {
 		e.preventDefault()
